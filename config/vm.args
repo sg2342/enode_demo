@@ -1,0 +1,5 @@
+-sname enode_demo
+-setcookie enode_demo_cookie
+
++K true
++A30
