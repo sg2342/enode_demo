@@ -21,7 +21,7 @@ rebar3 as prod tar
 ## bhyve enode archive
 ```sh
 git clone https://github.com/sg2342/bhyve_enode.git ../bhyve_enode
-doas ../bhye_enode/build.sh
+doas ../bhyve_enode/build.sh
 ```
 
 
