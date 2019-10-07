@@ -96,7 +96,7 @@ rebar3 as prod tar -n enode_demo -v 0.0.2
 echo put _build/prod/rel/enode_demo/enode_demo-0.0.2.tar.gz releases/enode_demo.tar.gz |
 sftp -b - $ssh_opts admin@192.168.23.1
 ```
-### update running release to 0.0.1 and make permanent
+### update running release to 0.0.2 and make permanent
 ```sh
 ssh $ssh_opts admin@192.168.23.1 'release_handler:unpack_release("enode_demo").'
 ssh $ssh_opts admin@192.168.23.1 'release_handler:install_release("0.0.2").'
