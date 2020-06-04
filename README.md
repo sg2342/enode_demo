@@ -44,6 +44,7 @@ doas sysctl net.link.tap.up_on_open=1
 doas ifconfig bridge23 create
 doas ifconfig bridge23 addm tap23
 doas ifconfig bridge23 inet 192.168.23.254/24 up
+doas ifconfig bridge23 inet6 fd12:3456:789a:1::ffff/64
 ```
 
 
@@ -56,6 +57,9 @@ doas bhyveload -m 512 -e autoboot_delay=0 -e console=comconsole \
  -e vfs.root.mountfrom=ufs:/dev/vtbd0 \
  -e minit.ip4.iface.0='vtnet0 192.168.23.1/24' \
  -e minit.ip4.route.0='default 192.168.23.254' \
+ -e minit.ip6.iface.0='vtnet0 fd12:3456:789a:1::1/64' \
+ -e minit.ip6.route.0='default fd12:3456:789a:1::ffff' \
+ -l /boot/userboot_4th.so \
  -d _build/enode_demo.img enode_demo
 ```
 ### start vm
@@ -73,6 +77,10 @@ ssh_opts="-i _build/ssh_admin_key -o UserKnownHostsFile=_build/known_hosts -o Id
 ssh $ssh_opts admin@192.168.23.1
 ```
 
+## or connect via IPv6
+```sh
+ssh $ssh_opts admin@fd12:3456:789a:1::1
+```
 
 ## 0.0.2 release
 ### get 0.0.2 source and update ssh_maint_ep to 0.1.1
