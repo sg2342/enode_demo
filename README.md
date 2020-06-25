@@ -1,7 +1,7 @@
 # Motivation
 demonstrate lifecycle (create, start, update, stop) of an erlang OTP node that
 runs as bhyve vm with the minimal FreeBSD kernel, user-land and init provided
-by bhyve_enode.
+by [bhyve_enode](https://github.com/sg2342/bhyve_enode).
 
 
 # Prerequisites
@@ -29,22 +29,23 @@ doas ../bhyve_enode/build.sh
 ```sh
 truncate -s 300m _build/enode_demo.img
 mkdir _build/mnt
-doas mdmfs -n -o noatime -S -F _build/enode_demo.img md23 _build/mnt
+MD=$(doas mdconfig -a -t vnode -f _build/enode_demo.img)
+doas newfs -n /dev/"$MD"
+doas mount -o noatime /dev/"$MD" _build/mnt
 doas tar -C _build/mnt/ -xf ../bhyve_enode/_build/bhyve_enode.txz
 doas tar -C _build/mnt/root/ -xf _build/prod/rel/enode_demo/enode_demo-0.0.1.tar.gz
 doas umount _build/mnt
-doas mdconfig -du 23
+doas mdconfig -du "$MD"
 ```
 
 
 ## network setup
 ```sh
-doas ifconfig tap23 create
-doas sysctl net.link.tap.up_on_open=1
-doas ifconfig bridge23 create
-doas ifconfig bridge23 addm tap23
-doas ifconfig bridge23 inet 192.168.23.254/24 up
-doas ifconfig bridge23 inet6 fd12:3456:789a:1::ffff/64
+BR=$(doas ifconfig bridge create)
+doas ifconfig "$BR" name testbr
+doas ifconfig testbr inet 192.168.23.254/24 up
+doas ifconfig testbr inet6 fd12:3456:789a:1::ffff/64
+doas valectl -h vale23:testbr
 ```
 
 
@@ -66,7 +67,7 @@ doas bhyveload -m 512 -e autoboot_delay=0 -e console=comconsole \
 ```sh
 doas bhyve -P -A -H -u  -l com1,stdio -m 512 -c 2 -s 17,lpc \
  -s 16,hostbridge -s 8,virtio-blk,_build/enode_demo.img \
- -s 9,virtio-net,tap23 enode_demo
+ -s 9,virtio-net,vale23:ed enode_demo
 ```
 
 
